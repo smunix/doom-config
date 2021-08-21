@@ -19,8 +19,8 @@
 ;;
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
-;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
-;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
+(setq doom-font (font-spec :family "monospace" :size 10 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "sans" :size 11))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -39,6 +39,8 @@
 (setq
  projectile-project-search-path '("~/Programming/" "~/Documents")
  )
+
+(setq load-prefer-newer t)
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -78,11 +80,33 @@
 (use-package lsp-haskell
  :ensure t
  :config
+ (setq lsp-haskell-server-path "haskell-language-server")
  (setq lsp-haskell-process-path-hie "haskell-language-server")
  (setq lsp-haskell-process-args-hie '())
  ;; Comment/uncomment this line to see interactions between lsp client/server.
  ;;(setq lsp-log-io t)
-)
+ )
+(after! lsp
+  (setq lsp-enable-symbol-highlighting t)
+  )
+(after! lsp-ui
+  (setq lsp-ui-doc-max-width 100)
+  (setq lsp-ui-doc-max-height 30)
+  (setq company-lsp-cache-candidates nil)
+  (setq lsp-ui-doc-enable t)
+  )
+(use-package company-lsp
+  :ensure t
+  :commands company-lsp
+  :config (push 'company-lsp company-backends))
+(use-package ccls
+  :ensure t
+  :config
+  (setq ccls-executable "/home/smunix/.nix-profile/bin/ccls")
+  (setq lsp-prefeer-flymake nil)
+  (setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
+  :hook ((c-mode c++-mode objc-mode) .
+         (lambda () (require 'ccls) (lsp))))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
